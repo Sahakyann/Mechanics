@@ -20,7 +20,6 @@ public class TimeTable extends JFrame implements ActionListener {
 		
 		setTools();
 		add(tools);
-
 		continueButton = new JButton("Continue");
 		continueButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -28,10 +27,8 @@ public class TimeTable extends JFrame implements ActionListener {
 			}
 		});
 		add(continueButton);
-
 		setSize(300, 200);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
 		setVisible(true);
 	}
 	
@@ -58,7 +55,7 @@ public class TimeTable extends JFrame implements ActionListener {
 		
 		field[0].setText("17");
 		field[1].setText("381");
-		field[2].setText("lse-f-91.stu");
+		field[2].setText("sta-f-83.stu");
 		field[3].setText("1");
 	}
 	
@@ -121,8 +118,22 @@ public class TimeTable extends JFrame implements ActionListener {
 	}
 
 	private void continueScheduling() {
+		int shiftsAllowed = Integer.parseInt(field[4].getText());
+		int initialClashes = courses.clashesLeft();
+		int minClashes = initialClashes;
+		int step = 0;
 
-	}
+		while (true) {
+			courses.iterate(shiftsAllowed);
+			draw();
+			int currentClashes = courses.clashesLeft();
+			if (currentClashes < minClashes) {
+				minClashes = currentClashes;
+				step++;
+			} else {
+				break;
+			}
+		}
 
 	public static void main(String[] args) {
 		new TimeTable();
