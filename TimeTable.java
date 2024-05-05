@@ -20,6 +20,17 @@ public class TimeTable extends JFrame implements ActionListener {
 		
 		setTools();
 		add(tools);
+
+		continueButton = new JButton("Continue");
+		continueButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				continueScheduling();
+			}
+		});
+		add(continueButton);
+
+		setSize(300, 200);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		setVisible(true);
 	}
@@ -107,6 +118,10 @@ public class TimeTable extends JFrame implements ActionListener {
 		case 4:
 			System.exit(0);
 		}
+	}
+
+	private void continueScheduling() {
+
 	}
 
 	public static void main(String[] args) {
