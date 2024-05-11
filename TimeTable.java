@@ -20,7 +20,7 @@ public class TimeTable extends JFrame implements ActionListener {
 		
 		setTools();
 		add(tools);
-		continueButton = new JButton("Continue");
+		JButton continueButton = new JButton("Continue");
 		continueButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				continueScheduling();
@@ -133,6 +133,7 @@ public class TimeTable extends JFrame implements ActionListener {
 			} else {
 				break;
 			}
+		}
 		}
 
 	public static void main(String[] args) {
