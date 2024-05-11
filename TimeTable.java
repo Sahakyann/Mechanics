@@ -9,6 +9,38 @@ public class TimeTable extends JFrame implements ActionListener {
 	private JTextField field[];
 	private CourseArray courses;
 	private Color CRScolor[] = {Color.RED, Color.GREEN, Color.BLACK};
+    private int shifts;
+	private int iterations;
+	private int slots;
+	private int lastClashCount;
+	
+	 public TimeTable(int slots, int shifts, int iterations) {
+	        super("Dynamic Time Table");
+	        setSize(500, 800);
+	        setLayout(new FlowLayout());
+
+	        this.slots = slots;
+	        this.shifts = shifts;
+	        this.iterations = iterations;
+
+	        screen.setPreferredSize(new Dimension(400, 800));
+	        add(screen);
+
+	        setTools();
+	        add(tools);
+	        JButton continueButton = new JButton("Continue");
+	        continueButton.addActionListener(new ActionListener() {
+	            public void actionPerformed(ActionEvent e) {
+	                continueScheduling();
+	            }
+	        });
+	        add(continueButton);
+	        setSize(300, 200);
+	        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	        setVisible(true);
+	        
+	        courses = new CourseArray(Integer.parseInt(field[1].getText()) + 1, this.slots);
+	    }
 	
 	public TimeTable() {
 		super("Dynamic Time Table");
@@ -32,6 +64,30 @@ public class TimeTable extends JFrame implements ActionListener {
 		setVisible(true);
 	}
 	
+	
+	public void runScheduling() {
+	
+	    courses = new CourseArray(Integer.parseInt(field[1].getText()) + 1, this.slots);
+	    courses.readClashes(field[2].getText());
+
+	    int minClashes = Integer.MAX_VALUE;
+	    int stepAtMinClashes = 0;
+	   
+	    for (int iteration = 1; iteration <= this.iterations; iteration++) {
+	        courses.iterate(this.shifts); 
+	        draw();
+
+	        int currentClashes = courses.clashesLeft();
+	        if (currentClashes < minClashes) {
+	            minClashes = currentClashes;
+	            stepAtMinClashes = iteration;
+	            this.lastClashCount = currentClashes;
+	        }
+	    }
+	    System.out.println("Completed " + this.iterations + " iterations with " +
+	                       "shifts: " + this.shifts + ", slots: " + this.slots +
+	                       ", minimum clashes: " + minClashes + " at iteration " + stepAtMinClashes);
+	}
 	public void setTools() {
 		String capField[] = {"Slots:", "Courses:", "Clash File:", "Iters:", "Shift:"};
 		field = new JTextField[capField.length];
@@ -53,10 +109,11 @@ public class TimeTable extends JFrame implements ActionListener {
 			tools.add(tool[i]);
 		}
 		
-		field[0].setText("17");
-		field[1].setText("381");
-		field[2].setText("sta-f-83.stu");
-		field[3].setText("1");
+		field[0].setText(String.valueOf(slots));
+        field[1].setText("381"); 
+        field[2].setText("sta-f-83.stu");
+        field[3].setText(String.valueOf(iterations));
+        field[4].setText(String.valueOf(shifts));
 	}
 	
 	public void draw() {
@@ -75,6 +132,10 @@ public class TimeTable extends JFrame implements ActionListener {
 		while (source != tool[result]) result++;
 		return result;
 	}
+	
+	 public int getLastClashCount() {
+	        return this.lastClashCount;
+	 }
 	
 	public void actionPerformed(ActionEvent click) {
 		int min, step, clashes;
@@ -137,6 +198,11 @@ public class TimeTable extends JFrame implements ActionListener {
 		}
 
 	public static void main(String[] args) {
-		new TimeTable();
+		int slots = 20;
+	    int shifts = 5;
+	    int iterations = 50;
+
+	    TimeTable table = new TimeTable(slots, shifts, iterations);
+		table.runScheduling();
 	}
 }
