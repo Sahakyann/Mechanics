@@ -94,6 +94,20 @@ public class CourseArray {
 	    return timeSlot;
 	}
 	
+	public int[] getCurrentConfiguration() {
+        int[] configuration = new int[elements.length - 1]; 
+        for (int i = 1; i < elements.length; i++) {
+            configuration[i - 1] = elements[i].mySlot;
+        }
+        return configuration;
+    }
+
+    public void setCurrentConfiguration(int[] configuration) {
+        for (int i = 1; i < elements.length; i++) {
+            elements[i].mySlot = configuration[i - 1];
+        }
+    }
+	
 	public void printResult() {
 		for (int i = 1; i < elements.length; i++)
 			System.out.println(i + "\t" + elements[i].mySlot);

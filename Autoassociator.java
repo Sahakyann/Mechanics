@@ -27,6 +27,7 @@ public class Autoassociator {
 	        }
 	    }
 	    
+	    
 	    public int unitUpdate(int[] neurons) {
 	        int neuronIndex = (int) (Math.random() * neurons.length);
 	        int sum = 0;
@@ -51,7 +52,7 @@ public class Autoassociator {
 	        }
 	    }
 	    
-	    public void fullUpdate(int[] neurons) {
+	    public int[] fullUpdate(int[] neurons) {
 	        boolean changed;
 	        do {
 	            changed = false;
@@ -63,5 +64,6 @@ public class Autoassociator {
 	                changed = true;
 	            }
 	        } while (changed);
+	        return neurons;
 	    }
 }

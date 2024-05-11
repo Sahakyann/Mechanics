@@ -6,7 +6,7 @@ public class TimeTableTestRunner {
 	public static void main(String[] args) throws IOException {
 
 		Random random = new Random();
-		int randomTests = 100;
+		int randomTests = 10;
 		FileWriter fw = new FileWriter("timetable_log.txt", true);
 		PrintWriter log = new PrintWriter(fw);
 		for (int i = 0; i < randomTests; i++) {
@@ -15,7 +15,7 @@ public class TimeTableTestRunner {
 			int randomIteration = 10 + random.nextInt(991); // Random iterations between 10 and 1000
 
 			TimeTable randomTable = new TimeTable(randomSlot, randomShift, randomIteration);
-			randomTable.runScheduling();
+			randomTable.runSchedulingWithAutoassociator();
 			log.println("Slots: " + randomSlot + ", Shifts: " + randomShift + ", Iterations: " + randomIteration
 					+ ", Clashes: " + randomTable.getLastClashCount());
 		}

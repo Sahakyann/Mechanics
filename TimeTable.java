@@ -22,6 +22,7 @@ public class TimeTable extends JFrame implements ActionListener {
 	private int slots;
 	private int lastClashCount;
 	private Autoassociator autoassociator;
+	private PrintWriter log;
 
 	public TimeTable(int slots, int shifts, int iterations) {
 		super("Dynamic Time Table");
@@ -50,6 +51,11 @@ public class TimeTable extends JFrame implements ActionListener {
 
 		courses = new CourseArray(Integer.parseInt(field[1].getText()) + 1, this.slots);
 		autoassociator = new Autoassociator(courses);
+		try {
+			log = new PrintWriter(new FileWriter("scheduling_updates_log.txt", true), true);
+		} catch (Exception e) {
+			System.err.println("Failed to open log file: " + e.getMessage());
+		}
 	}
 
 	public TimeTable() {
@@ -99,17 +105,48 @@ public class TimeTable extends JFrame implements ActionListener {
 					int shifts = Integer.parseInt(parts[1].split(": ")[1]);
 					int iterations = Integer.parseInt(parts[2].split(": ")[1]);
 					int timeslotIndex = ++lines;
-
 					int[] timeSlot = courses.getTimeSlot(timeslotIndex);
 					autoassociator.training(timeSlot);
-
-					log.printf("Used timeslot - Slots: %d, Shifts: %d, Iterations: %d, Timeslot Index: %d%n", slots,
-							shifts, iterations, timeslotIndex);
+					/*log.printf("Used timeslot - Slots: %d, Shifts: %d, Iterations: %d, Timeslot Index: %d%n", slots,
+							shifts, iterations, timeslotIndex);*/
 				}
 			}
 		} catch (IOException e) {
 			System.err.println("Error reading or writing log file: " + e.getMessage());
 		}
+	}
+
+	public void runSchedulingWithAutoassociator() {
+		courses = new CourseArray(100, 20);
+		autoassociator = new Autoassociator(courses);
+		int lastClashCount = Integer.MAX_VALUE;
+
+		for (int iteration = 1; iteration <= 100; iteration++) {
+			courses.iterate(1);
+			int currentClashes = courses.clashesLeft();
+			logCurrentState(iteration, currentClashes, "Before Update");
+
+			if (iteration % 10 == 0) {
+				applyAutoassociatorSuggestions(iteration);
+			}
+
+			if (currentClashes >= lastClashCount) {
+				applyAutoassociatorSuggestions(iteration);
+			}
+
+			lastClashCount = currentClashes;
+		}
+	}
+
+	private void applyAutoassociatorSuggestions(int iteration) {
+		int[] currentConfiguration = courses.getCurrentConfiguration();
+		int[] updatedConfiguration = autoassociator.fullUpdate(currentConfiguration);
+		courses.setCurrentConfiguration(updatedConfiguration);
+		logCurrentState(iteration, courses.clashesLeft(), "After Update");
+	}
+
+	private void logCurrentState(int iteration, int clashCount, String updatePhase) {
+		log.printf("Iteration: %d, Clashes: %d, Phase: %s%n", iteration, clashCount, updatePhase);
 	}
 
 	public void runScheduling() {
@@ -247,12 +284,13 @@ public class TimeTable extends JFrame implements ActionListener {
 	}
 
 	public static void main(String[] args) {
-		int slots = 20;
+		int slots = 17;
 		int shifts = 5;
 		int iterations = 50;
 
 		TimeTable table = new TimeTable(slots, shifts, iterations);
 		table.trainAutoassociatorFromLog("timetable_log.txt");
-		table.runScheduling();
+		//table.runScheduling();
+		table.runSchedulingWithAutoassociator();
 	}
 }
